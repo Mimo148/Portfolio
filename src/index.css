@@ -1,7 +1,9 @@
 @import "tailwindcss";
+
 body {
   font-family: 'Crimson Pro', serif;
 }
+
 * {
   cursor: none;
 }
