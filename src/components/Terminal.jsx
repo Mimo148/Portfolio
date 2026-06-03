@@ -73,6 +73,8 @@ const COMMANDS = {
   Open to relocation & remote roles.`,
 }
 
+const isMobile = () => window.innerWidth < 768
+
 function Terminal() {
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
@@ -90,7 +92,7 @@ function Terminal() {
 
   useEffect(() => {
     if (open && inputRef.current) {
-      inputRef.current.focus()
+      setTimeout(() => inputRef.current?.focus(), 300)
     }
   }, [open])
 
@@ -122,35 +124,37 @@ function Terminal() {
     }
   }
 
+  const mobile = isMobile()
+
   return (
     <>
-    {/* Tooltip bubble */}
-<AnimatePresence>
-  {!open && (
-    <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.9 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ delay: 3, duration: 0.5 }}
-      className="fixed bottom-20 right-6 z-[996] font-mono text-[10px] tracking-[0.08em] px-4 py-3"
-      style={{
-        background: 'rgba(6,8,10,0.95)',
-        border: '1px solid rgba(201,168,76,0.3)',
-        color: '#a89e88',
-        maxWidth: '220px',
-        boxShadow: '0 0 20px rgba(201,168,76,0.1)',
-      }}
-    >
-      <span style={{ color: '#c9a84c' }}>{'// '}</span>
-      for the curious ones — try the terminal
-      {/* Arrow pointing down */}
-      <div
-        className="absolute -bottom-1.5 right-8 w-3 h-3 rotate-45"
-        style={{ background: 'rgba(6,8,10,0.95)', borderRight: '1px solid rgba(201,168,76,0.3)', borderBottom: '1px solid rgba(201,168,76,0.3)' }}
-      />
-    </motion.div>
-  )}
-</AnimatePresence>
+      {/* Tooltip bubble – skryj na mobile */}
+      <AnimatePresence>
+        {!open && !mobile && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ delay: 3, duration: 0.5 }}
+            className="fixed bottom-20 right-6 z-[996] font-mono text-[10px] tracking-[0.08em] px-4 py-3"
+            style={{
+              background: 'rgba(6,8,10,0.95)',
+              border: '1px solid rgba(201,168,76,0.3)',
+              color: '#a89e88',
+              maxWidth: '220px',
+              boxShadow: '0 0 20px rgba(201,168,76,0.1)',
+            }}
+          >
+            <span style={{ color: '#c9a84c' }}>{'// '}</span>
+            for the curious ones — try the terminal
+            <div
+              className="absolute -bottom-1.5 right-8 w-3 h-3 rotate-45"
+              style={{ background: 'rgba(6,8,10,0.95)', borderRight: '1px solid rgba(201,168,76,0.3)', borderBottom: '1px solid rgba(201,168,76,0.3)' }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Toggle button */}
       <motion.button
         onClick={() => setOpen(!open)}
@@ -178,11 +182,16 @@ function Terminal() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-20 right-6 z-[995] w-[500px] max-w-[90vw]"
+            className="fixed z-[995] w-[500px] max-w-[92vw]"
             style={{
               background: 'rgba(6,8,10,0.97)',
               border: '1px solid rgba(201,168,76,0.3)',
               boxShadow: '0 0 60px rgba(201,168,76,0.1)',
+              bottom: mobile ? 'auto' : '5rem',
+              top: mobile ? '1rem' : 'auto',
+              right: mobile ? '4vw' : '1.5rem',
+              left: mobile ? '4vw' : 'auto',
+              width: mobile ? 'auto' : '500px',
             }}
           >
             {/* Title bar */}
@@ -202,7 +211,8 @@ function Terminal() {
 
             {/* Output */}
             <div
-              className="p-4 h-72 overflow-y-auto font-mono text-[12px] leading-[1.8]"
+              className="p-4 overflow-y-auto font-mono text-[12px] leading-[1.8]"
+              style={{ height: mobile ? '40vh' : '18rem' }}
               onClick={() => inputRef.current?.focus()}
             >
               {history.map((line, i) => (
